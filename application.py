@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from customtkinter.windows import CTkToplevel
 from tkinter import NONE, BOTH, X, TOP, BOTTOM, LEFT, RIGHT, RAISED
+import os
 from automation_tools import PDFMaker
 
 # font configurations
@@ -54,7 +55,7 @@ class option_tabs(ctk.CTkTabview):
         self.pdf_tab.grid_rowconfigure(6, weight=1)
         self.pdf_tab.grid_columnconfigure((0, 0), weight=1)
         
-        # target path box
+        # multiple folders switch
         self.folder_switch_pane = ctk.CTkFrame(master=self.pdf_tab, height=60, fg_color="gray11")
         self.folder_switch_pane.grid(row=1, column=0, columnspan=2, padx=1, pady=10, sticky="ew")
         self.folder_switch_pane.grid_rowconfigure(0, weight=1)
@@ -117,27 +118,71 @@ class option_tabs(ctk.CTkTabview):
         self.output_pane.grid_rowconfigure(0, weight=1)
         self.output_pane.grid_columnconfigure((0, 1), weight=1)
         self.output_pane.grid_propagate(False)
-        self.target_path_ind = ctk.CTkLabel(master=self.output_pane, text="Status: ", font=tab_font_config)
-        self.target_path_ind.grid(row=0, column=0, padx=20, sticky="nw")
-        self.target_path = ctk.CTkLabel(master=self.output_pane, textvariable=self.status, font=body_font_config)
-        self.target_path.grid(row=0, column=1, padx=20, sticky="ne")
+        self.status_ind = ctk.CTkLabel(master=self.output_pane, text="Status: ", font=tab_font_config)
+        self.status_ind.grid(row=0, column=0, padx=20, sticky="nw")
+        self.status_ind = ctk.CTkLabel(master=self.output_pane, textvariable=self.status, font=body_font_config)
+        self.status_ind.grid(row=0, column=1, padx=20, sticky="ne")
         
-        # _________
-        # Image Splitter pane
+        
+        """
+        Image splitter pane
+        """
         self.splitter_tab.grid_rowconfigure(6, weight=1)
         self.splitter_tab.grid_columnconfigure((0, 0), weight=1)
         
         header_txt = "Grab a folder with scans and split them vertically"
         body_txt = "This assumes scans are of sheets of US Letter paper divided into two pages, like a small comic book."
 
-        self.scan_splitter_header = ctk.CTkLabel(master=self.splitter_tab, text=header_txt, font=header_font_config)
+        self.scan_splitter_header = ctk.CTkLabel(master=self.splitter_tab, text=header_txt, font=header_font_config, wraplength=580)
         self.scan_splitter_header.grid(row=0, column=0, padx=20, pady=20, sticky="ew")
         
-        self.scan_splitter_info = ctk.CTkLabel(master=self.splitter_tab, text=body_txt, font=body_font_config, wraplength=600)
-        self.scan_splitter_info.grid(row=1, column=0, padx=20, pady=20, sticky="ew")
+        self.scan_splitter_info = ctk.CTkLabel(master=self.splitter_tab, text=body_txt, font=body_font_config, wraplength=500)
+        self.scan_splitter_info.grid(row=1, column=0, padx=20, pady=20, sticky="new")
         
-        self.grab_folder_split = ctk.CTkButton(master=self.splitter_tab, text="Get folder", command=self.get_target_folder, font=button_font_config)
-        self.grab_folder_split.grid(row=2, column=0, padx=20, pady=20, sticky="ew")
+        # target path box
+        self.target_path_pane = ctk.CTkFrame(master=self.splitter_tab, height=75, fg_color="gray11")
+        self.target_path_pane.grid(row=2, column=0, columnspan=2, padx=1, pady=10, sticky="ew")
+        self.target_path_pane.grid_rowconfigure(0, weight=1)
+        self.target_path_pane.grid_columnconfigure((0, 1), weight=1)
+        self.target_path_pane.grid_propagate(False)
+        # grab target folder button
+        self.grab_tf_btn = ctk.CTkButton(master=self.target_path_pane, text="Select Target Folder", command=self.get_target_folder, font=button_font_config)
+        self.grab_tf_btn.grid(row=1, column=0, columnspan=2, padx=20, pady=5, sticky="ew")
+        self.target_path_ind = ctk.CTkLabel(master=self.target_path_pane, text="Current target path: ", font=tab_font_config)
+        self.target_path_ind.grid(row=0, column=0, padx=20, pady=5, sticky="nw")
+        # self.target_path = ctk.CTkLabel(master=self.target_path_pane, textvariable=self.target_folder_path, font=body_font_config)
+        self.target_path_popup = ctk.CTkButton(master=self.target_path_pane, text="Show File Path", command=self.show_target_path, font=button_font_config)
+        self.target_path_popup.grid(row=0, column=1, padx=20, pady=5, sticky="ne")
+        
+        # destination path box
+        self.dest_path_pane = ctk.CTkFrame(master=self.splitter_tab, height=75, fg_color="gray11")
+        self.dest_path_pane.grid(row=3, column=0, columnspan=2, padx=1, pady=10, sticky="ew")
+        self.dest_path_pane.grid_rowconfigure(0, weight=1)
+        self.dest_path_pane.grid_columnconfigure((0, 1), weight=1)
+        self.dest_path_pane.grid_propagate(False)
+        # grab destination folder button
+        self.grab_df_btn = ctk.CTkButton(master=self.dest_path_pane, text="Select Destination Folder", command=self.get_dest_folder, font=button_font_config)
+        self.grab_df_btn.grid(row=1, column=0, columnspan=2, padx=20, pady=5, sticky="ew")
+        self.dest_path_ind = ctk.CTkLabel(master=self.dest_path_pane, text="Current destination path: ", font=tab_font_config)
+        self.dest_path_ind.grid(row=0, column=0, padx=20, pady=5, sticky="nw")
+        # self.dest_path = ctk.CTkLabel(master=self.dest_path_pane, textvariable=self.dest_folder_path, font=body_font_config)
+        self.dest_path_popup = ctk.CTkButton(master=self.dest_path_pane, text="Show File Path", command=self.show_dest_path, font=button_font_config)
+        self.dest_path_popup.grid(row=0, column=1, padx=20, pady=5, sticky="ne")
+        
+        # create PDF button
+        self.create_pdf_btn = ctk.CTkButton(master=self.splitter_tab, text="Halve all images in folder", command=self.create_pdf, font=exec_button_font_config, height=50)
+        self.create_pdf_btn.grid(row=5, column=0, columnspan=2, padx=20, pady=(20, 0), sticky="ew")
+        
+        # output box
+        self.output_pane = ctk.CTkFrame(master=self.splitter_tab, height=32, fg_color="gray11")
+        self.output_pane.grid(row=6, column=0, columnspan=2, padx=1, pady=1, sticky="ew")
+        self.output_pane.grid_rowconfigure(0, weight=1)
+        self.output_pane.grid_columnconfigure((0, 1), weight=1)
+        self.output_pane.grid_propagate(False)
+        self.status_ind = ctk.CTkLabel(master=self.output_pane, text="Status: ", font=tab_font_config)
+        self.status_ind.grid(row=0, column=0, padx=20, sticky="nw")
+        self.status_ind = ctk.CTkLabel(master=self.output_pane, textvariable=self.status, font=body_font_config)
+        self.status_ind.grid(row=0, column=1, padx=20, sticky="ne")
             
         # def check_input_validity():
         #     if self.folder_switch
@@ -166,12 +211,22 @@ class option_tabs(ctk.CTkTabview):
     
     def create_pdf(self):
         print("button clicked")
+        target_folder_path = self.target_folder_path.get()
+        dest_folder_path = self.dest_folder_path.get()
+        custom_name = self.input_box.get()
         if self.multiple_folders == False:
-            pdf_maker.convert_to_pdf(self.target_folder_path.get(), self.dest_folder_path.get(), self.input_box.get())
+            if self.input_box.get() is "":
+                pdf_maker.convert_to_pdf(target_folder_path, dest_folder_path, None)
+            else:
+                pdf_maker.convert_to_pdf(target_folder_path, dest_folder_path, custom_name)
             self.status.set(pdf_maker.status)
             
         elif self.multiple_folders == True:
-            pdf_maker.batch_pdf(self.target_folder_path.get(), self.dest_folder_path.get())
+            for filename in os.listdir(target_folder_path):
+                path = os.path.join(target_folder_path, filename).replace("\\","/")
+                pdf_maker.convert_to_pdf(path, dest_folder_path, None)
+                self.status.set(pdf_maker.status)
+                # self.status_ind.configure(textvariable=pdf_maker.status)
         
     def show_target_path(self):
         popup_window = ctk.CTkToplevel(self)

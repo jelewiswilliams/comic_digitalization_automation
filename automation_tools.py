@@ -51,16 +51,22 @@ class PDFMaker:
             
     def convert_to_pdf(self, input_folder, output_folder, output_name):
         if Path(input_folder).is_dir():
-            output_name = str(output_name) + ".pdf"
+            if output_name is None:
+                output_name = str(input_folder.split("/")[-1]) + ".pdf"
+                
+            else:
+                output_name = str(output_name) + ".pdf"
+            
             output_pdf_path = os.path.join(output_folder, output_name)
             self.curr_output_name = output_name
             self.images_to_pdf(input_folder, output_pdf_path)
 
-    def batch_pdf(self, input_folder, output_folder):
-        for filename in os.listdir(input_folder):
-            input_folder = os.path.join(input_folder, filename)
-            if Path(input_folder).is_dir():
-                output_name = str(filename) + ".pdf"
-                output_pdf_path = os.path.join(output_folder, output_name)
-                self.curr_output_name = output_name
-                self.images_to_pdf(input_folder, output_pdf_path)
+    # def batch_pdf(self, input_folder, output_folder):
+    #     for filename in os.listdir(input_folder):
+    #         path = os.path.join(input_folder, filename)
+    #         print(path)
+    #         if Path(path).is_dir():
+    #             output_name = str(filename) + ".pdf"
+    #             output_pdf_path = os.path.join(output_folder, output_name)
+    #             self.curr_output_name = output_name
+    #             self.images_to_pdf(path, output_pdf_path)
