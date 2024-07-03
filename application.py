@@ -1,7 +1,4 @@
 import customtkinter as ctk
-from customtkinter.windows import CTkToplevel
-from tkinter import NONE, BOTH, X, TOP, BOTTOM, LEFT, RIGHT, RAISED
-import os
 from automation_tools import PDFMaker, ImageHalver
 
 # font configurations
