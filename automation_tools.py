@@ -5,10 +5,10 @@ from pathlib import Path
 
 class PDFMaker:
     def __init__(self):
-        self.status = ""
+        self.curr_status = ""
+        self.total_status = ""
         self.curr_output_name = ""
-        self.total_pdfs_made = 0
-        self.total_pdfs_status = ""
+        self.total_operations = 0
         
 
     # for properly sorting image files with numeric filenames
@@ -44,13 +44,13 @@ class PDFMaker:
         # consolidates all images as a single PDF file
         if images:
             images[0].save(output_pdf_path, save_all=True, append_images=images[1:])
-            self.status = f"PDF created successfully: {self.curr_output_name}"
-            print(self.status)
+            self.curr_status = f"PDF created successfully: {self.curr_output_name}"
+            print(self.curr_status)
         else:
-            self.status = "No images found in the folder."
-            print(self.status)
+            status = "No images found in the folder."
+            print(self.curr_status)
             
-            
+    # for going through a single folder, setting the proper output PDF name, and passing it through images_to_pdf
     def convert_to_pdf(self, input_folder, output_folder, output_name):
         if Path(input_folder).is_dir():
             if output_name is None:
@@ -62,37 +62,48 @@ class PDFMaker:
             output_pdf_path = os.path.join(output_folder, output_name)
             self.curr_output_name = output_name
             self.images_to_pdf(input_folder, output_pdf_path)
-
+            
+    # same as above, but process multiple folders in a directory into PDFs
     def batch_pdf(self, input_folder, output_folder):
+        self.total_operations = 0
         for filename in os.listdir(input_folder):
             path = os.path.join(input_folder, filename)
-            print(path)
+            print("\nCurrent path:", path)
             if Path(path).is_dir():
                 output_name = str(filename) + ".pdf"
                 output_pdf_path = os.path.join(output_folder, output_name)
                 self.curr_output_name = output_name
+                
+                # process images into PDF
                 self.images_to_pdf(path, output_pdf_path)
-                self.total_images_halved += 1
+                
+                # update total number of PDFs made
+                self.total_operations += 1
 
-        num_halved_status = f"Successfully created {self.total_images_halved} PDF files."
-        self.total_halved_status = num_halved_status
-        print(self.total_halved_status)
+        self.total_status = f"Successfully created {self.total_operations} PDF files."
+        print("\n", self.total_status, "\n________________")
     
 class ImageHalver:
     def __init__(self):
-        self.curr_status = ""
+        # self.curr_status = ""
+        self.total_status = ""
         self.curr_output_name = ""
-        self.total_images_halved = 0
-        self.total_halved_status = ""
+        self.total_operations = 0
         
     def split_image_vertically(self, image_path, output_folder):
         # open the image
         with Image.open(image_path) as img:
             # calculate dimensions of landscape image divided in half vertically
             width, height = img.size
+            
+            # if the image is not already in landscape position, rotate it
+            if width < height:
+                img = img.transpose(Image.ROTATE_90)
+                width, height = img.size
+                
             half_width = width // 2
-
-            print(half_width)
+            # print(img.size)
+            # print(half_width)
             
             # get boxes for cropping each half
             left_half_box = (0, 0, half_width, height)
@@ -114,7 +125,7 @@ class ImageHalver:
             
     def process_images_in_folder(self, folder_path, output_folder):
         # reset number of images halved if a previous operation was done to prevent misleading
-        self.total_images_halved = 0
+        self.total_operations = 0
         
         # create output folder
         os.makedirs(output_folder, exist_ok=True)
@@ -125,12 +136,16 @@ class ImageHalver:
             
             # check if file is an image (ignore .DS_Store, etc. that may break the splitting function)
             if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
-                self.split_image_vertically(file_path, output_folder)
-                curr_status = f"Processed and split image: {filename}"
-                self.status = curr_status
-                self.total_images_halved += 1
-                print(self.status)
+                # split images
+                self.split_image_vertically(file_path, output_folder)  
                 
-        num_halved_status = f"Successfully halved {self.total_images_halved} images."
-        self.total_halved_status = num_halved_status
-        print(self.total_halved_status)
+                # print status
+                self.curr_status = f"Processed and split image: {filename}"
+                print("\n", self.curr_status)
+                
+                # update total number of halved images
+                self.total_operations += 1
+
+        # print total number of halved images      
+        self.total_status = f"Successfully halved {self.total_operations} images."
+        print("\n", self.total_status, "\n________________")
