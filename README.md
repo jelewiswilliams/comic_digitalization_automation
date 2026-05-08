@@ -4,6 +4,29 @@ When I was in elementary school, I spent much of my free time expressing my imag
 
 This is a simple GUI application (based on CustomTkinter) that allows me to streamline the process of managing scans of my work to create a seamless experience for revisiting my younger mind, as well as continue exercising skills in software development. Below are descriptions of two key functionalities of the application.
 
+## Installation
+
+Requires Python 3.9+.
+
+**macOS / Linux:**
+```bash
+./setup.sh
+source .venv/bin/activate
+python application.py
+```
+
+**Windows:**
+```bat
+setup.bat
+.venv\Scripts\activate
+python application.py
+```
+
+The setup scripts create a `.venv` virtual environment and install everything in `requirements.txt`. To install dependencies manually instead:
+```bash
+pip install -r requirements.txt
+```
+
 ## PDF Maker
 For a comic book or comic strip series, I organize scans into folders as appropriate, and the image files are numerically named as needed to maintain the chronology I intended long ago (I'd just need to make sure that I have the folder sorted by file name). However, clicking through each scan file in a folder to view pages is not an ideal viewing experience. It would be easier to scroll through a PDF file containing all scanned images (in order, as appropriate). 
 

@@ -20,7 +20,7 @@ class root(ctk.CTk):
         
         # GUI window config
         self.title("Jeff's Comic Digitalization Labs")
-
+        self.geometry("640x640")
         self.resizable(width=False, height=False)
         self.opts_tabview = option_tabs(master=self, width=600, height=600)
         self.opts_tabview.grid(row=0, column=0, padx=20, pady=20)
@@ -227,7 +227,7 @@ class option_tabs(ctk.CTkTabview):
         dest_folder_path = self.dest_folder_path.get()
         custom_name = self.input_box.get()
         if self.multiple_folders == False:
-            if self.input_box.get() is "":
+            if self.input_box.get() == "":
                 pdf_maker.convert_to_pdf(target_folder_path, dest_folder_path, None)
             else:
                 pdf_maker.convert_to_pdf(target_folder_path, dest_folder_path, custom_name)
