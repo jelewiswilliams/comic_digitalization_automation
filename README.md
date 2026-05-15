@@ -6,7 +6,7 @@ This is a simple GUI application (based on CustomTkinter) that allows me to stre
 
 ## Installation
 
-Requires Python 3.9+.
+Requires Python 3.9+ built against Tk 8.6 or newer. Apple's `/usr/bin/python3` ships with Tk 8.5, which makes the window render blank — on macOS, install Homebrew python first (`brew install python@3.12 python-tk@3.12`). `setup.sh` selects it automatically. The python.org Windows installer already bundles a recent Tk.
 
 **macOS / Linux:**
 ```bash

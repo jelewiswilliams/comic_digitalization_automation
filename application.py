@@ -1,3 +1,14 @@
+import tkinter
+
+# CustomTkinter widgets do not render under Tk < 8.6 — the window appears
+# blank with only a title bar. Apple's /usr/bin/python3 ships with Tk 8.5.
+if tkinter.TkVersion < 8.6:
+    raise RuntimeError(
+        f"This app needs Tk >= 8.6 (found {tkinter.TkVersion}). "
+        "Rebuild the venv against a Python with a modern Tk — on macOS, "
+        "run setup.sh, which selects Homebrew's python3.12."
+    )
+
 import customtkinter as ctk
 from automation_tools import PDFMaker, ImageHalver
 
